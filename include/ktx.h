@@ -493,6 +493,14 @@ typedef KTX_error_code
 typedef KTX_error_code
     (KTX_APIENTRY* PFNKTEXWRITETOSTREAM)(ktxTexture* This,
                                          ktxStream* dststr);
+typedef ktx_size_t
+    (KTX_APIENTRY* PFNKTEXGETDATASIZEUNCOMPRESSEDLEVEL)(ktxTexture* This,
+                                                        ktx_uint32_t level);
+typedef KTX_error_code
+    (KTX_APIENTRY* PFNKTEXLOADIMAGEDATALEVEL)(ktxTexture* This,
+                                              ktx_uint32_t level,
+                                              ktx_uint8_t* pBuffer,
+                                              ktx_size_t bufSize);
 
 /**
  * @memberof ktxTexture
@@ -514,6 +522,8 @@ typedef KTX_error_code
     PFNKTEXWRITETONAMEDFILE WriteToNamedFile;
     PFNKTEXWRITETOMEMORY WriteToMemory;
     PFNKTEXWRITETOSTREAM WriteToStream;
+    PFNKTEXLOADIMAGEDATALEVEL LoadImageDataLevel;
+    PFNKTEXGETDATASIZEUNCOMPRESSEDLEVEL GetDataSizeUncompressedLevel;
 };
 
 /****************************************************************
@@ -642,7 +652,11 @@ typedef KTX_error_code
 #define ktxTexture_WriteToStream(This, dststr) \
                   (This)->vtbl->WriteToStream(This, dststr)
 
+#define KtxTexture_LoadImageDataLevel(This,level,pBuffer,bufSize) \
+                  (This)->vtbl->LoadImageDataLevel(This,level,pBuffer,bufSize)
 
+#define ktxTexture_GetDataSizeUncompressedLevel(This,level) \
+                                (This)->vtbl->GetDataSizeUncompressedLevel(This,level)
 /**
  * @class ktxTexture1
  * @~English
