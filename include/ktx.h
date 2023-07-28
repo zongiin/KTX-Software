@@ -449,6 +449,11 @@ typedef KTX_error_code
                                           ktx_uint32_t layer,
                                           ktx_uint32_t faceSlice,
                                           ktx_size_t* pOffset);
+typedef KTX_error_code
+    (KTX_APIENTRY* PFNKTEXGETIMAGEOFFSETLEVEL)(ktxTexture* This, ktx_uint32_t level,
+                                          ktx_uint32_t layer,
+                                          ktx_uint32_t faceSlice,
+                                          ktx_size_t* pOffset);
 typedef ktx_size_t
     (KTX_APIENTRY* PFNKTEXGETDATASIZEUNCOMPRESSED)(ktxTexture* This);
 typedef ktx_size_t
@@ -524,6 +529,7 @@ typedef KTX_error_code
     PFNKTEXWRITETOSTREAM WriteToStream;
     PFNKTEXLOADIMAGEDATALEVEL LoadImageDataLevel;
     PFNKTEXGETDATASIZEUNCOMPRESSEDLEVEL GetDataSizeUncompressedLevel;
+    PFNKTEXGETIMAGEOFFSETLEVEL GetImageOffsetLevel;
 };
 
 /****************************************************************
@@ -545,6 +551,9 @@ typedef KTX_error_code
  */
 #define ktxTexture_GetImageOffset(This, level, layer, faceSlice, pOffset) \
             (This)->vtbl->GetImageOffset(This, level, layer, faceSlice, pOffset)
+
+#define ktxTexture_GetImageOffsetLevel(This, level, layer, faceSlice, pOffset) \
+            (This)->vtbl->GetImageOffsetLevel(This, level, layer, faceSlice, pOffset)
 
 /**
  * @~English

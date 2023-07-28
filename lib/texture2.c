@@ -1870,6 +1870,47 @@ ktxTexture2_GetImageOffset(ktxTexture2* This, ktx_uint32_t level,
     return KTX_SUCCESS;
 }
 
+KTX_error_code
+ktxTexture2_GetImageOffsetLevel(ktxTexture2* This, ktx_uint32_t level,
+                          ktx_uint32_t layer, ktx_uint32_t faceSlice,
+                          ktx_size_t* pOffset)
+{
+    if (This == NULL)
+        return KTX_INVALID_VALUE;
+
+    if (level >= This->numLevels || layer >= This->numLayers)
+        return KTX_INVALID_OPERATION;
+
+    if (This->supercompressionScheme != KTX_SS_NONE)
+        return KTX_INVALID_OPERATION;
+
+    if (This->isCubemap) {
+        if (faceSlice >= This->numFaces)
+            return KTX_INVALID_OPERATION;
+    } else {
+        ktx_uint32_t maxSlice = MAX(1, This->baseDepth >> level);
+        if (faceSlice >= maxSlice)
+            return KTX_INVALID_OPERATION;
+    }
+
+    // Get the offset of the start of the level.
+    *pOffset = 0;
+
+    // All layers, faces & slices within a level are the same size.
+    if (layer != 0) {
+        ktx_size_t layerSize;
+        layerSize = ktxTexture_layerSize(ktxTexture(This), level,
+                                         KTX_FORMAT_VERSION_TWO);
+        *pOffset += layer * layerSize;
+    }
+    if (faceSlice != 0) {
+        ktx_size_t imageSize;
+        imageSize = ktxTexture2_GetImageSize(This, level);
+        *pOffset += faceSlice * imageSize;
+    }
+    return KTX_SUCCESS;
+}
+
 /**
  * @memberof ktxTexture2
  * @~English
@@ -3032,6 +3073,7 @@ struct ktxTexture_vtbl ktxTexture2_vtbl = {
     (PFNKTEXWRITETOSTREAM)ktxTexture2_WriteToStream,
     (PFNKTEXLOADIMAGEDATALEVEL)ktxTexture2_LoadImageDataLevel,
     (PFNKTEXGETDATASIZEUNCOMPRESSEDLEVEL)ktxTexture2_GetDataSizeUncompressedLevel,
+    (PFNKTEXGETIMAGEOFFSETLEVEL)ktxTexture2_GetImageOffsetLevel,
 };
 
 /** @} */
